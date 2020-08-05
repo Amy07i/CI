@@ -1,0 +1,59 @@
+# xz1 kernel build
+
+name: Build kernel for xz1 dual
+
+on:
+  #release:
+  #  types: [published]
+  #push:
+  #  tags:
+  #  - 'v*'
+  watch:
+    types: [started]
+  
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    if: github.event.repository.owner.id == github.event.sender.id
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+
+    - name: Clone
+      run: |
+        git clone -b 9.0 https://github.com/Amy07i/sonyxperiadev-kernel-copyleft.git /opt/kernel --depth=1
+        git clone -b pie-release https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 /opt/gcc64 --depth=1
+        git clone https://github.com/Amy07i/AnyKernel3 /opt/AnyKernel3
+        
+    - name: Build
+      run: |
+        export PATH="/opt/gcc64/bin:$PATH"
+        cd /opt/kernel
+        make O=./out clean
+        make O=./out mrproper
+        export KBUILD_DIFFCONFIG=poplar_dsds_diffconfig
+        make O=out ARCH=arm64 msmcortex-perf_defconfig
+        make -j8 O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-android-
+       
+    - name: Package
+      run: |
+        cp /opt/kernel/out/arch/arm64/boot/Image.gz-dtb /opt/AnyKernel3
+        mkdir -p /opt/AnyKernel3/modules/vendor/lib/modules/
+        cp /opt/kernel/out/drivers/staging/qcacld-3.0/wlan.ko /opt/AnyKernel3/modules/vendor/lib/modules/qca_cld3_wlan.ko
+        cd /opt/AnyKernel3
+        mkdir -p /opt/upload
+        zip -r /opt/upload/StockPlusKernel-XZ1-Dual-$(date +"%Y%m%d").zip *
+        
+    - name : Upload
+      uses: actions/upload-artifact@master
+      if: always()
+      with:
+        name: kernel-poplar-dsds
+        path: /opt/upload
+    
+    - name: Clean
+      run: |
+        cd /opt/AnyKernel3
+        rm -rf Image.gz-dtb modules/vendor
+        rm -rf /opt/upload
