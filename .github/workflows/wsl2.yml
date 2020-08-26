@@ -1,0 +1,51 @@
+# WSL2 kernel build
+
+name: Build kernel for WSL2
+
+on:
+  release:
+    types: [published]
+  
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+
+    - name: Source
+      run: |
+        git clone --depth=1 https://github.com/Amy07i/WSL2-Linux-Kernel.git /opt/kernel
+        
+    - name: Env
+      run: |
+        sudo apt update
+        sudo apt upgrade
+        sudo apt install -y --no-install-recommends bc bison build-essential ca-certificates flex gnupg libelf-dev libssl-dev lsb-release software-properties-common 
+        
+    - name: Toolchain
+      run: |
+        wget https://apt.llvm.org/llvm.sh
+        sudo chmod +x llvm.sh
+        sudo ./llvm.sh 10
+        
+    - name: Build
+      run: |
+        cd /opt/kernel
+        export KBUILD_BUILD_USER=root 
+        export KBUILD_BUILD_HOST=ubuntu
+        make -j$(nproc) -s CC=clang-10 KCONFIG_CONFIG=Microsoft/config-wsl LD=ld.lld-10 O=out.x86_64 distclean olddefconfig all
+        
+    - name : Upload
+      uses: actions/upload-artifact@master
+      if: always()
+      with:
+        name: kernel-packages
+        path: /opt/kernel/out.x86_64/arch/x86/boot/bzImage
+    
+    - name: Clean
+      run: |
+        cd /opt/kernel
+        make O=out.x86_64 clean
+        make O=out.x86_64 mrproper
