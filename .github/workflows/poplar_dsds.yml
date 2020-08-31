@@ -22,19 +22,21 @@ jobs:
 
     - name: Clone
       run: |
-        git clone -b 9.0 https://github.com/Amy07i/sonyxperiadev-kernel-copyleft.git /opt/kernel --depth=1
+        git clone -b pie-update https://github.com/Amy07i/sonyxperiadev-kernel-copyleft.git /opt/kernel --depth=1
+        git clone -b pie-release https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/ /opt/clang --depth=1
         git clone -b pie-release https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 /opt/gcc64 --depth=1
+        git clone -b pie-release https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 /opt/gcc32 --depth=1
         git clone https://github.com/Amy07i/AnyKernel3 /opt/AnyKernel3
         
     - name: Build
       run: |
-        export PATH="/opt/gcc64/bin:$PATH"
+        export PATH="/opt/clang/clang-4691093/bin:/opt/gcc64/bin:/opt/gcc32/bin:$PATH"
         cd /opt/kernel
         make O=./out clean
         make O=./out mrproper
         export KBUILD_DIFFCONFIG=poplar_dsds_diffconfig
         make O=out ARCH=arm64 msmcortex-perf_defconfig
-        make -j8 O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-android-
+        make -j8 O=out ARCH=arm64 CC=clang CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi-
        
     - name: Package
       run: |
@@ -49,7 +51,7 @@ jobs:
       uses: actions/upload-artifact@master
       if: always()
       with:
-        name: kernel-poplar-dsds
+        name: xz1-kernel
         path: /opt/upload
     
     - name: Clean
