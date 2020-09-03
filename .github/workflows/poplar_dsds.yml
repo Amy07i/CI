@@ -22,7 +22,7 @@ jobs:
 
     - name: Clone
       run: |
-        git clone -b q https://github.com/Amy07i/sonyxperiadev-kernel-copyleft.git /opt/kernel --depth=1
+        git clone -b LA.UM.8.4.r1-8x98.0 https://github.com/Amy07i/sonyxperiadev-kernel-copyleft.git /opt/kernel --depth=1
         git clone -b android10-release https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/ /opt/clang --depth=1
         git clone -b pie-release https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 /opt/gcc64 --depth=1
         git clone -b pie-release https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 /opt/gcc32 --depth=1
