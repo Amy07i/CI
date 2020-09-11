@@ -22,15 +22,15 @@ jobs:
 
     - name: Clone
       run: |
-        git clone -b LA.UM.8.4.r1-8x98.0 https://github.com/Amy07i/sonyxperiadev-kernel-copyleft.git /opt/kernel --depth=1
-        git clone -b android10-release https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/ /opt/clang --depth=1
+        git clone -b master https://github.com/Amy07i/sonyxperiadev-kernel-copyleft.git /opt/kernel --depth=1
+        git clone -b 10.0 https://github.com/crdroidmod/android_prebuilts_clang_host_linux-x86_clang-6607189 /opt/clang --depth=1
         git clone -b pie-release https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 /opt/gcc64 --depth=1
         git clone -b pie-release https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 /opt/gcc32 --depth=1
         git clone https://github.com/Amy07i/AnyKernel3 /opt/AnyKernel3
         
     - name: Build
       run: |
-        export PATH="/opt/clang/clang-r353983c/bin:/opt/gcc64/bin:/opt/gcc32/bin:$PATH"
+        export PATH="/opt/clang/bin:/opt/gcc64/bin:/opt/gcc32/bin:$PATH"
         cd /opt/kernel
         make O=./out clean
         make O=./out mrproper
