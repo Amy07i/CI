@@ -33,9 +33,7 @@ jobs:
     - name: Build
       run: |
         cd /opt/kernel
-        export KBUILD_BUILD_USER=root 
-        export KBUILD_BUILD_HOST=ubuntu
-        make -j$(nproc) -s CC=clang-10 KCONFIG_CONFIG=Microsoft/config-wsl LD=ld.lld-10 O=out.x86_64 distclean olddefconfig all
+        make -j$(nproc) -s CC=clang-11 KCONFIG_CONFIG=Microsoft/config-wsl LD=ld.lld-11 O=out.x86_64 distclean olddefconfig all
         
     - name : Upload
       uses: actions/upload-artifact@master
