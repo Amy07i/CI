@@ -45,7 +45,7 @@ jobs:
         cp /opt/kernel/out/drivers/staging/qcacld-3.0/wlan.ko /opt/AnyKernel3/modules/vendor/lib/modules/qca_cld3_wlan.ko
         cd /opt/AnyKernel3
         mkdir -p /opt/upload
-        zip -r /opt/upload/StockPlusKernel-XZ1-Dual-$(date +"%Y%m%d").zip *
+        zip -r /opt/upload/StockPlusKernel-XZ1-Dual-$(date +"%Y%m%d%H%M%S").zip *
         
     - name : Upload
       uses: actions/upload-artifact@master
